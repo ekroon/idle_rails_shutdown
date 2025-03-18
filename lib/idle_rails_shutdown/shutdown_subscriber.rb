@@ -10,25 +10,16 @@ module IdleRailsShutdown
 
     attr_reader :last_event_time
 
-    attach_to :action_controller
+    attach_to :action_controller, subscriber = instance
 
-    def initialize
-      super
-      @last_event_time = Time.now
-
-      start_monitoring_thread
-    end
-
-    # Handle any controller action processing
     def process_action(event)
       @last_event_time = Time.now
       Rails.logger.debug "IdleRailsShutdown: Event received, updated last_event_time"
     end
 
-    private
-
     def start_monitoring_thread
       Thread.new do
+        @last_event_time ||= Time.now
         sleep 1.second
         loop do
           sleep IdleRailsShutdown.check_interval
@@ -37,9 +28,11 @@ module IdleRailsShutdown
       end
     end
 
+    private
+
     def check_idle_time
       elapsed_time = Time.now - @last_event_time
-      Rails.logger.debug "IdleRailsShutdown: Time since last event: #{elapsed_time.round(2)}s"
+      Rails.logger.warn "IdleRailsShutdown: Time since last event: #{elapsed_time.round(2)}s"
 
       if elapsed_time >= IdleRailsShutdown.shutdown_threshold
         Rails.logger.warn "IdleRailsShutdown: No events received for #{elapsed_time.round(2)}s, sending SIGINT"

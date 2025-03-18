@@ -21,7 +21,7 @@ module IdleRailsShutdown
       @shutdown_threshold ||= 1.minute
 
       # Initialize and subscribe the shutdown subscriber
-      ShutdownSubscriber.instance
+      ShutdownSubscriber.instance.start_monitoring_thread
     end
   end
 end
