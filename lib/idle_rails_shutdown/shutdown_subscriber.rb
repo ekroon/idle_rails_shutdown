@@ -32,7 +32,7 @@ module IdleRailsShutdown
 
     def check_idle_time
       elapsed_time = Time.now - @last_event_time
-      Rails.logger.warn "IdleRailsShutdown: Time since last event: #{elapsed_time.round(2)}s"
+      Rails.logger.info "IdleRailsShutdown: Time since last event: #{elapsed_time.round(2)}s"
 
       if elapsed_time >= IdleRailsShutdown.shutdown_threshold
         Rails.logger.warn "IdleRailsShutdown: No events received for #{elapsed_time.round(2)}s, sending SIGINT"
