@@ -5,8 +5,8 @@ require_relative "lib/idle_rails_shutdown/version"
 Gem::Specification.new do |spec|
   spec.name = "idle_rails_shutdown"
   spec.version = IdleRailsShutdown::VERSION
-  spec.authors = [ "Your Name" ]
-  spec.email = [ "your.email@example.com" ]
+  spec.authors = [ "Erwin Kroon"]
+  spec.email = [ "email@hidden" ]
 
   spec.summary = "Health check mechanism for Rails applications on Fly.io"
   spec.description = "Monitors application health by tracking event frequency and shutting down when events stop, replacing ShutdownJob functionality with an ActiveSupport::Subscriber"
