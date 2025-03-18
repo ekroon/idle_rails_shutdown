@@ -5,7 +5,7 @@
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'idle_rails_shutdown', path: 'lib/fly_rails_shutdown'
+gem "idle_rails_shutdown", git: "https://github.com/ekroon/idle_rails_shutdown.git", branch: "main"
 ```
 
 And then execute:
