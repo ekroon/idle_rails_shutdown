@@ -12,9 +12,15 @@ module IdleRailsShutdown
 
     attach_to :action_controller, subscriber = instance
 
+    def initialize
+      raise "IdleRailsShutdown.setup not called" unless IdleRailsShutdown.configured?
+    end
+
     def process_action(event)
-      @last_event_time = Time.now
-      Rails.logger.debug "IdleRailsShutdown: Event received, updated last_event_time"
+      unless IdleRailsShutdown.ignore_controllers.include?(event.payload[:controller])
+        @last_event_time = Time.now
+        Rails.logger.debug "IdleRailsShutdown: Event received, updated last_event_time"
+      end
     end
 
     def start_monitoring_thread
