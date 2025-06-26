@@ -26,11 +26,12 @@ class ShutdownSubscriberTest < Minitest::Test
   end
 
   def test_process_action_ignored_controller
-    @subscriber.instance_variable_set(:@last_event_time, Time.now - 5)
+    original_time = Time.now - 5
+    @subscriber.instance_variable_set(:@last_event_time, original_time)
     IdleRailsShutdown.ignore_controllers = ['AdminController']
     event = build_event('AdminController')
     @subscriber.process_action(event)
-    assert_operator @subscriber.last_event_time, :<=, Time.now - 4
+    assert_equal original_time, @subscriber.last_event_time
   end
 
   def test_check_idle_time_triggers_sigint
