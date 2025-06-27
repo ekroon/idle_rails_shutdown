@@ -23,8 +23,8 @@ The gem works out of the box with default settings. It will monitor controller a
 You can configure the gem in an initializer:
 
 ```ruby
-# config/initializers/fly_rails_shutdown.rb
-FlyRailsShutdown.configure do |config|
+# config/initializers/idle_rails_shutdown.rb
+IdleRailsShutdown.configure do |config|
   # How often to check if the application is healthy (default: 1 minute)
   config.check_interval = 30.seconds
 
@@ -34,6 +34,11 @@ FlyRailsShutdown.configure do |config|
   # Optional callable to run when the application is idle. When set, this will
   # be executed instead of sending a SIGINT to the process.
   # config.shutdown_callable = -> { system("flyctl", "machine", "suspend") }
+
+  # The callable can be given directly, as a method reference, or as a string.
+  # These are equivalent:
+  # config.shutdown_callable = MyModule::MyClass.method(:shutdown)
+  # config.shutdown_callable = "MyModule::MyClass.shutdown"
 end
 ```
 
