@@ -30,6 +30,10 @@ FlyRailsShutdown.configure do |config|
 
   # How long to wait without events before shutting down (default: 1 minute)
   config.shutdown_threshold = 1.minute
+
+  # Optional callable to run when the application is idle. When set, this will
+  # be executed instead of sending a SIGINT to the process.
+  # config.shutdown_callable = -> { system("flyctl", "machine", "suspend") }
 end
 ```
 

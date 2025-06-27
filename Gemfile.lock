@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    idle_rails_shutdown (0.1.0)
+    idle_rails_shutdown (0.1.1)
       activesupport (>= 7.0)
       rails (>= 7.0)
 

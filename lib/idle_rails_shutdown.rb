@@ -9,7 +9,7 @@ module IdleRailsShutdown
 
   # Configuration options
   class << self
-    attr_accessor :check_interval, :shutdown_threshold, :ignore_controllers
+    attr_accessor :check_interval, :shutdown_threshold, :ignore_controllers, :shutdown_callable
 
     def configure
       yield self if block_given?
@@ -25,6 +25,7 @@ module IdleRailsShutdown
       @check_interval ||= 1.minute
       @shutdown_threshold ||= 1.minute
       @ignore_controllers ||= []
+      @shutdown_callable ||= nil
 
       # Initialize and subscribe the shutdown subscriber
       ShutdownSubscriber.instance.start_monitoring_thread
