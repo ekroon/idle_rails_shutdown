@@ -41,7 +41,15 @@ module IdleRailsShutdown
       Rails.logger.info "IdleRailsShutdown: Time since last event: #{elapsed_time.round(2)}s"
 
       if elapsed_time >= IdleRailsShutdown.shutdown_threshold
-        Rails.logger.warn "IdleRailsShutdown: No events received for #{elapsed_time.round(2)}s, sending SIGINT"
+        Rails.logger.warn "IdleRailsShutdown: No events received for #{elapsed_time.round(2)}s, initiating shutdown"
+        perform_shutdown
+      end
+    end
+
+    def perform_shutdown
+      if IdleRailsShutdown.shutdown_callable.respond_to?(:call)
+        IdleRailsShutdown.shutdown_callable.call
+      else
         send_sigint_to_pid(0)
       end
     end

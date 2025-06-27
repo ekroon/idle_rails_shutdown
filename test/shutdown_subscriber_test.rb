@@ -7,6 +7,7 @@ class ShutdownSubscriberTest < Minitest::Test
       config.check_interval = 0.1
       config.shutdown_threshold = 0.1
       config.ignore_controllers = []
+      config.shutdown_callable = nil
     end
     @subscriber = IdleRailsShutdown::ShutdownSubscriber.instance
   end
@@ -34,7 +35,7 @@ class ShutdownSubscriberTest < Minitest::Test
     assert_equal original_time, @subscriber.last_event_time
   end
 
-  def test_check_idle_time_triggers_sigint
+  def test_check_idle_time_triggers_default_shutdown
     @subscriber.instance_variable_set(:@last_event_time, Time.now - 1)
     called = false
 
@@ -43,6 +44,20 @@ class ShutdownSubscriberTest < Minitest::Test
     end
 
     assert called
+  end
+
+  def test_check_idle_time_uses_custom_callable
+    IdleRailsShutdown.shutdown_callable = -> { @custom_called = true }
+    @subscriber.instance_variable_set(:@last_event_time, Time.now - 1)
+    @custom_called = false
+
+    @subscriber.stub(:send_sigint_to_pid, ->(_pid) { flunk "default shutdown called" }) do
+      @subscriber.send(:check_idle_time)
+    end
+
+    assert @custom_called
+  ensure
+    IdleRailsShutdown.shutdown_callable = nil
   end
 
   def test_check_idle_time_no_sigint_when_recent
