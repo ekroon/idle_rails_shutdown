@@ -1,6 +1,18 @@
 require 'test_helper'
 require 'securerandom'
 
+module TestModule
+  class Handler
+    class << self
+      attr_accessor :called
+    end
+
+    def self.shutdown
+      self.called = true
+    end
+  end
+end
+
 class ShutdownSubscriberTest < Minitest::Test
   def setup
     IdleRailsShutdown.configure do |config|
@@ -56,6 +68,34 @@ class ShutdownSubscriberTest < Minitest::Test
     end
 
     assert @custom_called
+  ensure
+    IdleRailsShutdown.shutdown_callable = nil
+  end
+
+  def test_shutdown_callable_accepts_method_object
+    IdleRailsShutdown.shutdown_callable = TestModule::Handler.method(:shutdown)
+    @subscriber.instance_variable_set(:@last_event_time, Time.now - 1)
+    TestModule::Handler.called = false
+
+    @subscriber.stub(:send_sigint_to_pid, ->(_pid) { flunk "default shutdown called" }) do
+      @subscriber.send(:check_idle_time)
+    end
+
+    assert TestModule::Handler.called
+  ensure
+    IdleRailsShutdown.shutdown_callable = nil
+  end
+
+  def test_shutdown_callable_accepts_string_reference
+    IdleRailsShutdown.shutdown_callable = "TestModule::Handler.shutdown"
+    @subscriber.instance_variable_set(:@last_event_time, Time.now - 1)
+    TestModule::Handler.called = false
+
+    @subscriber.stub(:send_sigint_to_pid, ->(_pid) { flunk "default shutdown called" }) do
+      @subscriber.send(:check_idle_time)
+    end
+
+    assert TestModule::Handler.called
   ensure
     IdleRailsShutdown.shutdown_callable = nil
   end
